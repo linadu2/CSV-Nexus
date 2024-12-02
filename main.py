@@ -2,7 +2,9 @@ import csv
 import os
 
 def load_csv(file: str, delimiter: str) -> tuple[list[str], list[list[str]]]:
-    with open(os.path.join('csv', file), newline='', encoding='utf-8') as csvfile:
+    if f"{file}.csv" not in os.listdir('csv'):
+        raise AttributeError("csv file not in the directory")
+    with open(os.path.join('csv', f'{file}.csv'), newline='', encoding='utf-8') as csvfile:
         spamreader = csv.reader(csvfile, delimiter=delimiter, quotechar='|')
         data = []
         for row in spamreader:
@@ -20,8 +22,16 @@ def write_csv(file: str, data: list[list[str]], header:list[str], delimiter=',')
 
 
 if __name__ == '__main__':
-    header, data = load_csv('test.csv', ',')
+    choix = None
+    while choix != 'q':
+
+        print('1: load csv file\n'
+              '2: sort data')
+        choix = input('choix: ')
+
+    """    
+    header, data = load_csv('bxl.csv', ',')
     print(header)
     [print(row) for row in data]
 
-    write_csv('out', data, header)
+    write_csv('out', data, header)"""
