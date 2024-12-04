@@ -23,7 +23,7 @@ def load_csv(file: str, delimiter: str=',') -> tuple[list[str], list[list[str]]]
         for row in spamreader:
             temp.append(row)
         header = temp[:1][0]
-        header.append('region')
+        header.append('département')
         temp = temp[1:]
         data = []
         data += [[row[0], float(row[1]), float(row[2]), row[3], os.path.splitext(file)[0]] for row in temp]
