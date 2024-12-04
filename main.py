@@ -2,7 +2,6 @@ import csv
 import os
 import argparse as ag
 
-from numpy.ma.extras import row_stack
 
 
 def equality_check(arr1: list[str], arr2: list[str]) -> bool:
@@ -50,7 +49,7 @@ def write_csv(file: str, data: list[list[str]], header:list[str], delimiter: str
 
 def main():
     parser = ag.ArgumentParser(description='A programme to performe various operation on csv file')
-    parser.add_argument('merge', nargs='+')
+    parser.add_argument('file', nargs='+')
     parser.add_argument('-o', '--output', default=None, nargs='?')
     parser.add_argument('-s', '--sort', default=None, nargs='?')
 
