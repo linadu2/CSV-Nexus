@@ -68,7 +68,7 @@ def sort_data(data, header, column):
         data = sorted(data, key=lambda x: x[header.index(column)])
         [print(row) for row in data]
     else:
-        raise ValueError('the sort parameter don\'t match a colone')
+        raise ValueError('the sort parameter don\'t match a column')
 
     return data
 
