@@ -64,9 +64,9 @@ def merge_csv(file, data, header):
 
 def sort_data(data, header, column):
     if column in header:
-        print(header.index(column))
+        #print(header.index(column))
         data = sorted(data, key=lambda x: x[header.index(column)])
-        [print(row) for row in data]
+        #[print(row) for row in data]
     else:
         raise ValueError('the sort parameter don\'t match a column')
 
