@@ -4,10 +4,10 @@ from lib import *
 
 
 def print_aligned_data(data, header):
+    """script based on a StockOverflow topic: https://stackoverflow.com/questions/9989334/create-nice-column-output-in-python"""
     # Define column widths
     col_widths = [len(title)+5 for title in header]
 
-    # Print the header (optional, customize as needed)
     print(" | ".join(f"{h:<{w}}" for h, w in zip(header, col_widths)))
     print("-" * (sum(col_widths) + 12))  # Adjust separator length for alignment
 
