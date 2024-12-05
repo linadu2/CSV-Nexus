@@ -1,6 +1,6 @@
 import unittest
 import os
-from main import load_csv, write_csv, merge_csv, equality_check, sort_data
+from V1.main import load_csv, write_csv, merge_csv, equality_check, sort_data
 
 class TestCSVNexus(unittest.TestCase):
 
@@ -8,7 +8,7 @@ class TestCSVNexus(unittest.TestCase):
         """Prépare les fichiers CSV de test avant chaque test."""
         self.file1 = "test1.csv"
         self.file2 = "test2.csv"
-        self.output_file = "output.csv"
+        self.output_file = "../output.csv"
 
         with open(self.file1, "w", encoding='utf-8') as f1:
             f1.write("nom,quantité,prix,categorie\n")

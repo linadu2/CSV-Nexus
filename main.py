@@ -1,118 +1,81 @@
-import csv
 import os
-import argparse as ag
+import cmd
+from lib import *
 
 
+def print_aligned_data(data, header):
+    # Define column widths
+    col_widths = [len(title)+5 for title in header]
 
-def equality_check(arr1: list[str], arr2: list[str]) -> bool:
-   if len(arr1) != len(arr2):
-      return False
-   for i in range(0, len(arr2)):
-      if arr1[i] != arr2[i]:
-         return False
-   return True
+    # Print the header (optional, customize as needed)
+    print(" | ".join(f"{h:<{w}}" for h, w in zip(header, col_widths)))
+    print("-" * (sum(col_widths) + 12))  # Adjust separator length for alignment
 
-
-
-def load_csv(file: str, delimiter: str=',') -> tuple[list[str], list[list[str]]]:
-    if file not in os.listdir('.'):
-        raise FileNotFoundError("csv file not in the directory")
-    with open(file, newline='', encoding='utf-8') as csvfile:
-        spamreader = csv.reader(csvfile, delimiter=delimiter, quotechar='|')
-        temp = []
-        for row in spamreader:
-            temp.append(row)
-        header = temp[:1][0]
-        header.append('département')
-        temp = temp[1:]
-        data = []
-        data += [[row[0], float(row[1]), float(row[2]), row[3], os.path.splitext(file)[0]] for row in temp]
-
-        #print(header)
-        return header, data
+    # Print each row with alignment
+    for row in data:
+        print(" | ".join(f"{str(item):<{w}}" for item, w in zip(row, col_widths)))
 
 
-def write_csv(file: str, data: list[list[str]], header:list[str], delimiter: str=',', force_overwrite: bool= False) -> None:
-    #print(file in os.listdir('.'))
-    if not force_overwrite:
-        if file in os.listdir('.'):
-            choix = None
-            while choix != 'yes' and choix != 'n':
-                choix = input('warning file exist, would you overwrite it ? (yes/n)')
-            if choix == 'n':
-                return
+class CsvNexusShell(cmd.Cmd):
+    intro = 'Welcome to CSV-Nexus Shell - type help or ? for commands.\n'
+    prompt = 'CSV-Nexus: '
 
-    with open(file, 'w', newline='', encoding='utf-8') as csvfile:
-        csv_writer = csv.writer(csvfile, delimiter=delimiter)
-        csv_writer.writerow(header)
-        csv_writer.writerows(data)
+    def __init__(self):
+        super().__init__()
+        self.data = []
+        self.header = []
 
+    def do_exit(self, line):
+        """Exit CSV-Nexus."""
+        return True
 
-def merge_csv(file, data, header):
-    for x in file:
-        h, d = load_csv(x)
-        if not header:
-            data += d
-            header = h
+    def do_add(self, line):
+        """add a csv file to merge into the current dataset"""
+        csv_file = [file for file in os.listdir('.') if file.endswith('.csv')]
+        [print(f'{x+1}. {file}') for x, file in enumerate(csv_file)]
+        choix = -1
+        while choix not in range(1, len(csv_file) + 1):
+            choix = input('Number of the file to add: ')
+            try:
+                choix = int(choix)
+            except ValueError:
+                choix = -1
+        h, d = load_csv(csv_file[choix - 1])
+        if not self.header:
+            self.header = h
+            self.data += d
         else:
-            if equality_check(h, header):
-                data += d
+            if equality_check(h, self.header):
+                self.data += d
             else:
                 raise AttributeError('header does not match between csv file')
-    return header, data
 
+    def do_view(self, line):
+        """show the current dataset"""
+        print_aligned_data(self.data, self.header)
 
-def sort_data(data, header, column):
-    if column in header:
-        #print(header.index(column))
-        data = sorted(data, key=lambda x: x[header.index(column)])
-        #[print(row) for row in data]
-    else:
-        raise ValueError('the sort parameter don\'t match a column')
+    def do_sort(self, line):
+        """sort the current dataset"""
+        [print(f'{x+1}. {column}') for x, column in enumerate(self.header)]
+        choix = -1
+        while choix not in range(1, len(self.header) + 1):
+            choix = input('Number of the column to sort: ')
+            try:
+                choix = int(choix)
+            except ValueError:
+                choix = -1
 
-    return data
+        is_reverse = None
+        while is_reverse != 'y' and is_reverse != 'n':
+            is_reverse = input('reverse the sort ?(y/n): ')
+        is_reverse = True if choix == 'y' else False
 
+        self.data = sort_data(self.data, self.header, self.header[choix - 1], reverse=is_reverse)
 
-def main():
-    parser = ag.ArgumentParser(description='A programme to performe various operation on csv file', prog='CSV-Nexus')
-    parser.add_argument('file', nargs='+', help='the file to load in the programme, if multiple file is given it will be merge')
-    parser.add_argument('-o', '--output', default=None, nargs='?', help='a output file if you want to save the result in a csv file')
-    parser.add_argument('-s', '--sort', default=None, nargs='?', help='a column to sort the data')
-    parser.add_argument('--force-overwrite', action='store_true', help='to force the overwrite if the output file exist')
-
-    args = parser.parse_args()
-
-    #print(args.merge)
-    #print(args.output)
-    #print(args.sort)
-    #print(args.force_overwrite)
-    if args.output:
-        if not args.output.endswith('.csv'):
-            raise ValueError("the output file is not a csv file")
-
-    data = []
-    header = None
-    if len(args.file) > 1:
-        header, data = merge_csv(args.file, data, header)
-    else:
-        header, data = load_csv(args.file[0])
-
-    #print(header)
-    #[print(row) for row in data]
-
-    #print(header, args.sort )
-
-    if args.sort:
-        data = sort_data(data, header, args.sort)
-
-    if args.output:
-        write_csv(args.output, data, header, force_overwrite = args.force_overwrite)
-    else:
-        print(header)
-        [print(row) for row in data]
-
-
-
+    def do_export(self, line):
+        """export the current dataset"""
+        choix = input('Name of the file to export: ')
+        write_csv(choix, self.data, self.header)
 
 if __name__ == '__main__':
-    main()
+    CsvNexusShell().cmdloop()
