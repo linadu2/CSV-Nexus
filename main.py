@@ -2,6 +2,9 @@ import os
 import cmd
 from lib import *
 
+class NoCSVFileFound(Exception):
+    pass
+
 
 def print_aligned_data(data, header):
     """script based on a StockOverflow topic: https://stackoverflow.com/questions/9989334/create-nice-column-output-in-python"""
@@ -32,6 +35,8 @@ class CsvNexusShell(cmd.Cmd):
     def do_add(self, line):
         """add a csv file to merge into the current dataset"""
         csv_file = [file for file in os.listdir('.') if file.endswith('.csv')]
+        if not csv_file:
+            raise NoCSVFileFound()
         [print(f'{x+1}. {file}') for x, file in enumerate(csv_file)]
         choix = -1
         while choix not in range(1, len(csv_file) + 1):
