@@ -75,7 +75,10 @@ class CsvNexusShell(cmd.Cmd):
     def do_export(self, line):
         """export the current dataset"""
         choix = input('Name of the file to export: ')
-        write_csv(choix, self.data, self.header)
+        if choix.endswith('.csv'):
+            write_csv(choix, self.data, self.header)
+        else:
+            raise AttributeError('file does not have the correct extension')
 
 if __name__ == '__main__':
     CsvNexusShell().cmdloop()
