@@ -1,13 +1,16 @@
+"""the docstring"""
 import os
 import cmd
-from lib import *
+from lib import load_csv, equality_check, sort_data, write_csv
 
 class NoCSVFileFound(Exception):
-    pass
+    """class for the NoCSVFileFound exception"""
+
 
 
 def print_aligned_data(data, header):
-    """script based on a StockOverflow topic: https://stackoverflow.com/questions/9989334/create-nice-column-output-in-python"""
+    """script based on a StockOverflow topic:
+    https://stackoverflow.com/questions/9989334/create-nice-column-output-in-python"""
     # Define column widths
     col_widths = [len(title)+5 for title in header]
 
@@ -20,6 +23,7 @@ def print_aligned_data(data, header):
 
 
 class CsvNexusShell(cmd.Cmd):
+    """Class for the csv-nexus shell"""
     intro = 'Welcome to CSV-Nexus Shell - type help or ? for commands.\n'
     prompt = 'CSV-Nexus: '
 
@@ -71,9 +75,9 @@ class CsvNexusShell(cmd.Cmd):
                 choix = -1
 
         is_reverse = None
-        while is_reverse != 'y' and is_reverse != 'n':
+        while is_reverse not in ['y', 'n']:
             is_reverse = input('reverse the sort ?(y/n): ')
-        is_reverse = True if choix == 'y' else False
+        is_reverse = is_reverse == 'y'
 
         self.data = sort_data(self.data, self.header, self.header[choix - 1], reverse=is_reverse)
 
