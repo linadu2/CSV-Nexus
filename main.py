@@ -34,10 +34,14 @@ class CsvNexusShell(cmd.Cmd):
 
     def do_exit(self, line):
         """Exit CSV-Nexus."""
+        if line:
+            return
         return True
 
     def do_add(self, line):
         """add a csv file to merge into the current dataset"""
+        if line:
+            return
         csv_file = [file for file in os.listdir('.') if file.endswith('.csv')]
         if not csv_file:
             raise NoCSVFileFound()
@@ -61,10 +65,14 @@ class CsvNexusShell(cmd.Cmd):
 
     def do_view(self, line):
         """show the current dataset"""
+        if line:
+            return
         print_aligned_data(self.data, self.header)
 
     def do_sort(self, line):
         """sort the current dataset"""
+        if line:
+            return
         [print(f'{x+1}. {column}') for x, column in enumerate(self.header)]
         choix = -1
         while choix not in range(1, len(self.header) + 1):
@@ -83,6 +91,8 @@ class CsvNexusShell(cmd.Cmd):
 
     def do_export(self, line):
         """export the current dataset"""
+        if line:
+            return
         choix = input('Name of the file to export: ')
         if choix.endswith('.csv'):
             write_csv(choix, self.data, self.header)
