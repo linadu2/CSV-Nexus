@@ -71,6 +71,8 @@ class CsvNexusShell(cmd.Cmd):
         """show the current dataset"""
         if line:
             return
+        if not self.data:
+            return
         print_aligned_data(self.data, self.header)
 
     def do_sort(self, line):
@@ -81,6 +83,8 @@ class CsvNexusShell(cmd.Cmd):
                 return
             choix = self.header.index(line)
         else:
+            if not self.data:
+                return
             [print(f'{x+1}. {column}') for x, column in enumerate(self.header)]
             choix = -1
             while choix not in range(1, len(self.header) + 1):
@@ -100,6 +104,8 @@ class CsvNexusShell(cmd.Cmd):
     def do_export(self, line):
         """export the current dataset"""
         if line:
+            return
+        if not self.data:
             return
         choix = input('Name of the file to export: ')
         if choix.endswith('.csv'):
