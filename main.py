@@ -41,19 +41,24 @@ class CsvNexusShell(cmd.Cmd):
     def do_add(self, line):
         """add a csv file to merge into the current dataset"""
         if line:
-            return
-        csv_file = [file for file in os.listdir('.') if file.endswith('.csv')]
-        if not csv_file:
-            raise NoCSVFileFound()
-        [print(f'{x+1}. {file}') for x, file in enumerate(csv_file)]
-        choix = -1
-        while choix not in range(1, len(csv_file) + 1):
-            choix = input('Number of the file to add: ')
-            try:
-                choix = int(choix)
-            except ValueError:
-                choix = -1
-        h, d = load_csv(csv_file[choix - 1])
+            if not line in os.listdir():
+                print('CSV file not in directory')
+                return
+            else:
+                h, d = load_csv(line)
+        else:
+            csv_file = [file for file in os.listdir('.') if file.endswith('.csv')]
+            if not csv_file:
+                raise NoCSVFileFound()
+            [print(f'{x+1}. {file}') for x, file in enumerate(csv_file)]
+            choix = -1
+            while choix not in range(1, len(csv_file) + 1):
+                choix = input('Number of the file to add: ')
+                try:
+                    choix = int(choix)
+                except ValueError:
+                    choix = -1
+            h, d = load_csv(csv_file[choix - 1])
         if not self.header:
             self.header = h
             self.data += d
@@ -72,15 +77,20 @@ class CsvNexusShell(cmd.Cmd):
     def do_sort(self, line):
         """sort the current dataset"""
         if line:
-            return
-        [print(f'{x+1}. {column}') for x, column in enumerate(self.header)]
-        choix = -1
-        while choix not in range(1, len(self.header) + 1):
-            choix = input('Number of the column to sort: ')
-            try:
-                choix = int(choix)
-            except ValueError:
-                choix = -1
+            if not line in self.header:
+                print('No header named like this')
+                return
+            else:
+                choix = self.header.index(line)
+        else:
+            [print(f'{x+1}. {column}') for x, column in enumerate(self.header)]
+            choix = -1
+            while choix not in range(1, len(self.header) + 1):
+                choix = input('Number of the column to sort: ')
+                try:
+                    choix = int(choix)
+                except ValueError:
+                    choix = -1
 
         is_reverse = None
         while is_reverse not in ['y', 'n']:
