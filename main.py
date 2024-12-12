@@ -44,8 +44,7 @@ class CsvNexusShell(cmd.Cmd):
             if not line in os.listdir():
                 print('CSV file not in directory')
                 return
-            else:
-                h, d = load_csv(line)
+            h, d = load_csv(line)
         else:
             csv_file = [file for file in os.listdir('.') if file.endswith('.csv')]
             if not csv_file:
@@ -80,8 +79,7 @@ class CsvNexusShell(cmd.Cmd):
             if not line in self.header:
                 print('No header named like this')
                 return
-            else:
-                choix = self.header.index(line)
+            choix = self.header.index(line)
         else:
             [print(f'{x+1}. {column}') for x, column in enumerate(self.header)]
             choix = -1
