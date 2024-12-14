@@ -2,6 +2,7 @@
 import os
 import cmd
 from lib import load_csv, equality_check, sort_data, write_csv
+import argparse
 
 class NoCSVFileFound(Exception):
     """class for the NoCSVFileFound exception"""
@@ -27,10 +28,11 @@ class CsvNexusShell(cmd.Cmd):
     intro = 'Welcome to CSV-Nexus Shell - type help or ? for commands.\n'
     prompt = 'CSV-Nexus: '
 
-    def __init__(self):
+    def __init__(self, directory):
         super().__init__()
         self.data = []
         self.header = []
+        self.directory = directory
 
     def do_exit(self, line):
         """Exit CSV-Nexus."""
@@ -41,12 +43,12 @@ class CsvNexusShell(cmd.Cmd):
     def do_add(self, line):
         """add a csv file to merge into the current dataset"""
         if line:
-            if not line in os.listdir():
+            if not line in os.listdir(self.directory):
                 print('CSV file not in directory')
                 return
-            h, d = load_csv(line)
+            h, d = load_csv(line, self.directory)
         else:
-            csv_file = [file for file in os.listdir('.') if file.endswith('.csv')]
+            csv_file = [file for file in os.listdir(self.directory) if file.endswith('.csv')]
             if not csv_file:
                 raise NoCSVFileFound()
             [print(f'{x+1}. {file}') for x, file in enumerate(csv_file)]
@@ -57,7 +59,7 @@ class CsvNexusShell(cmd.Cmd):
                     choix = int(choix)
                 except ValueError:
                     choix = -1
-            h, d = load_csv(csv_file[choix - 1])
+            h, d = load_csv(csv_file[choix - 1],self.directory)
         if not self.header:
             self.header = h
             self.data += d
@@ -109,9 +111,18 @@ class CsvNexusShell(cmd.Cmd):
             return
         choix = input('Name of the file to export: ')
         if choix.endswith('.csv'):
-            write_csv(choix, self.data, self.header)
+            write_csv(choix, self.data, self.header, self.directory)
         else:
             raise AttributeError('file does not have the correct extension')
 
+def main():
+    parser = argparse.ArgumentParser(description='CSV-Nexus Shell')
+    parser.add_argument('input')
+
+    arg = parser.parse_args()
+
+    CsvNexusShell(arg.input).cmdloop()
+
+
 if __name__ == '__main__':
-    CsvNexusShell().cmdloop()
+    main()
