@@ -12,10 +12,10 @@ def equality_check(arr1: list[str], arr2: list[str]) -> bool:
 
 
 
-def load_csv(file: str, delimiter: str=',') -> tuple[list[str], list[list[str]]]:
-    if file not in os.listdir('.'):
+def load_csv(file: str, directory:str, delimiter: str=',') -> tuple[list[str], list[list[str]]]:
+    if file not in os.listdir(directory):
         raise FileNotFoundError("csv file not in the directory")
-    with open(file, newline='', encoding='utf-8') as csvfile:
+    with open(os.path.join(directory, file), newline='', encoding='utf-8') as csvfile:
         spamreader = csv.reader(csvfile, delimiter=delimiter, quotechar='|')
         temp = []
         for row in spamreader:
@@ -41,35 +41,20 @@ def load_csv(file: str, delimiter: str=',') -> tuple[list[str], list[list[str]]]
         return header, data
 
 
-def write_csv(file: str, data: list[list[str]], header:list[str], delimiter: str=',', force_overwrite: bool= False) -> None:
+def write_csv(file: str, data: list[list[str]], header:list[str], directory:str, delimiter: str=',', force_overwrite: bool= False) -> None:
     #print(file in os.listdir('.'))
     if not force_overwrite:
-        if file in os.listdir('.'):
+        if file in os.listdir(directory):
             choix = None
             while choix != 'yes' and choix != 'n':
                 choix = input('warning file exist, would you overwrite it ? (yes/n)')
             if choix == 'n':
                 return
 
-    with open(file, 'w', newline='', encoding='utf-8') as csvfile:
+    with open(os.path.join(directory, file), 'w', newline='', encoding='utf-8') as csvfile:
         csv_writer = csv.writer(csvfile, delimiter=delimiter)
         csv_writer.writerow(header)
         csv_writer.writerows(data)
-
-
-def merge_csv(file, data, header):
-    for x in file:
-        h, d = load_csv(x)
-        if not header:
-            data += d
-            header = h
-        else:
-            if equality_check(h, header):
-                data += d
-            else:
-                raise AttributeError('header does not match between csv file')
-    return header, data
-
 
 
 def sort_data(data, header, column, reverse: bool = False):

@@ -2,7 +2,7 @@ import unittest
 import os
 import csv
 from unittest.mock import patch, mock_open
-from lib import equality_check, load_csv, write_csv, merge_csv, sort_data  # Replace with actual module name
+from lib import equality_check, load_csv, write_csv, sort_data  # Replace with actual module name
 
 class TestFunctions(unittest.TestCase):
 
@@ -63,22 +63,6 @@ class TestFunctions(unittest.TestCase):
     def test_write_csv_with_overwrite(self, mock_input, mock_open_file, mock_listdir):
         write_csv("existing.csv", [["data1", 1, 2]], ["col1", "col2", "col3"])
         mock_open_file.assert_called_once_with("existing.csv", "w", newline="", encoding="utf-8")
-
-    def test_merge_csv(self):
-        with patch("lib.load_csv", side_effect=[
-            (["col1", "col2"], [["data1", 1], ["data2", 2]]),
-            (["col1", "col2"], [["data3", 3]])
-        ]):
-            header, data = merge_csv(["file1.csv", "file2.csv"], [], [])
-            self.assertEqual(header, ["col1", "col2"])
-            self.assertEqual(data, [["data1", 1], ["data2", 2], ["data3", 3]])
-
-        with patch("lib.load_csv", side_effect=[
-            (["col1", "col2"], [["data1", 1]]),
-            (["col1", "col3"], [["data2", 2]])
-        ]):
-            with self.assertRaises(AttributeError):
-                merge_csv(["file1.csv", "file2.csv"], [], [])
 
     def test_sort_data(self):
         header = ["col1", "col2"]
