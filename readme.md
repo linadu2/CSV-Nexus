@@ -23,7 +23,7 @@ Place the script (`csv_nexus.exe`) and any CSV files you want to work with in th
 Run the script in a terminal or command prompt:
 
 ```bash
-csv_nexus
+csv_nexus input_directory
 ```
 
 ---
